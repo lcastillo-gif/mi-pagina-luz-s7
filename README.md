@@ -1,31 +1,26 @@
 # Mi página
 
-Una página pública con un formulario que guarda lo que la gente escribe, y una
-lista que muestra lo guardado.
+Plantilla de la Sesión 7 del curso Claude for Business: una página pública que
+alguien sin experiencia de código arma con ayuda de Claude — un formulario que
+guarda lo que la gente escribe y una lista que lo muestra. Hoy `index.html`
+solo trae el aviso "todavía no hay nada aquí"; así empieza toda página nueva,
+antes de construir la versión real.
 
-Construida en la **Sesión 7 del curso Claude for Business**, sin escribir código:
-todo se le pidió a Claude en español.
+## De dónde salen los datos
 
-## Cómo está armado
+Todo lo que la página muestre sale de una tabla de Supabase llamada
+`registros`, nunca de texto escrito a mano en el HTML. Sus columnas se
+documentan en `CLAUDE.md`, sección 2, una vez que la tabla exista.
 
-| Pieza | Qué hace |
-|---|---|
-| **GitHub** | Guarda este proyecto y su historial |
-| **Netlify** | Publica lo que hay aquí como página web |
-| **Supabase** | Guarda lo que la gente escribe en el formulario |
+## Qué hay en `.claude`
 
-## Cómo se cambia
+`.claude/agents/revisor-antes-de-publicar.md` define un subagente que, antes
+de publicar, busca llaves expuestas, cambios fuera de lo pedido y problemas de
+calidad. Solo reporta: nunca corrige ni publica por su cuenta.
 
-1. Se abre una sesión de Claude sobre este repositorio.
-2. Se le pide el cambio **en una rama**, no en `main`.
-3. Netlify hace una **vista previa** con su propia liga: ahí se revisa.
-4. Cuando está bien, se fusiona la rama. Eso —y solo eso— publica.
+## Cómo seguir
 
-> **Fusionar cuesta.** El plan gratuito de Netlify alcanza para unas veinte
-> publicaciones al mes. Las vistas previas son gratis e ilimitadas: se itera ahí
-> y se fusiona poco.
-
-## Qué NO va en este repositorio
-
-La llave `sb_publishable_` sí puede estar aquí: está hecha para andar a la vista.
-La que empieza con `sb_secret_` o dice `service_role`, **nunca**.
+1. Lee `CLAUDE.md`: ahí están las reglas de esta página.
+2. Pide a Claude el formulario real y su conexión a Supabase.
+3. Antes de fusionar, corre el subagente `revisor-antes-de-publicar`.
+4. Fusiona solo con tu visto bueno — eso es lo único que publica en Netlify.
