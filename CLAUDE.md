@@ -13,11 +13,16 @@ cuándo se usa.)*
 
 ## 2. De dónde sale cada cifra
 
-Los datos de esta página viven en una tabla de Supabase llamada `registros`.
-Ninguna cifra ni ningún texto que se muestre se escribe a mano en el HTML: todo
-sale de esa tabla o de lo que la persona escriba en el formulario.
+Los datos de esta página van a vivir en una tabla de Supabase llamada
+`registros`. Ninguna cifra ni ningún texto que se muestre se escribe a mano en
+el HTML: todo sale de esa tabla o de lo que la persona escriba en el
+formulario.
 
-*(En la sesión le agregas las columnas que acabes usando.)*
+Por ahora este repositorio no tiene todavía el formulario ni la conexión a
+Supabase (`index.html` sigue siendo la plantilla de inicio), así que aquí
+todavía no hay columnas que documentar. En cuanto se construya la página real
+y quede conectada a `registros`, aquí se listan las columnas con las que se
+quedó la tabla.
 
 ## 3. Cómo quiero que trabajes aquí
 
