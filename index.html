@@ -3,46 +3,139 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Todavía no hay nada aquí</title>
+<title>Mi página</title>
 <style>
   :root { color-scheme: light dark; }
   body {
     margin: 0; min-height: 100vh;
-    display: grid; place-items: center;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     background: #f4f6f8; color: #1a2027;
     padding: 24px;
+    display: flex; justify-content: center;
   }
   @media (prefers-color-scheme: dark) {
     body { background: #121820; color: #e8eef5; }
-    .caja { background: #1b232e !important; border-color: #2b3644 !important; }
-    code { background: #253040 !important; }
+    .caja, .registro { background: #1b232e !important; border-color: #2b3644 !important; }
+    input, textarea { background: #253040 !important; color: #e8eef5 !important; border-color: #2b3644 !important; }
   }
+  .contenido { width: 100%; max-width: 480px; }
   .caja {
     background: #fff; border: 1px solid #dde3ea; border-radius: 14px;
-    padding: 34px; max-width: 480px; text-align: center;
-    box-shadow: 0 10px 30px -18px rgba(0,0,0,.3);
+    padding: 28px; box-shadow: 0 10px 30px -18px rgba(0,0,0,.3);
   }
-  h1 { font-size: 22px; margin: 0 0 10px; }
-  p { margin: 0 0 14px; line-height: 1.55; }
-  p:last-child { margin-bottom: 0; }
-  code {
-    background: #eef2f6; padding: 2px 6px; border-radius: 4px;
-    font-family: ui-monospace, "Consolas", monospace; font-size: .9em;
+  h1 { font-size: 20px; margin: 0 0 18px; }
+  label { display: block; font-size: 14px; margin: 0 0 6px; font-weight: 600; }
+  input, textarea {
+    width: 100%; box-sizing: border-box; padding: 10px 12px;
+    border: 1px solid #dde3ea; border-radius: 8px; font: inherit;
+    margin-bottom: 14px;
   }
-  .chica { font-size: 14px; opacity: .75; }
+  textarea { resize: vertical; min-height: 80px; }
+  button {
+    width: 100%; padding: 12px; border: none; border-radius: 8px;
+    background: #2563eb; color: #fff; font: inherit; font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: .6; cursor: default; }
+  .estado { font-size: 14px; margin-top: 10px; min-height: 18px; }
+  .estado.error { color: #dc2626; }
+  .estado.ok { color: #16a34a; }
+  h2 { font-size: 16px; margin: 28px 0 12px; }
+  .registro {
+    background: #fff; border: 1px solid #dde3ea; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .registro .nombre { font-weight: 600; margin-bottom: 4px; }
+  .registro .mensaje { line-height: 1.5; white-space: pre-wrap; }
+  .vacio { opacity: .7; font-size: 14px; }
 </style>
 </head>
 <body>
-  <div class="caja">
-    <h1>Todavía no hay nada aquí</h1>
-    <p>Y eso es exactamente lo que tiene que decir hoy.</p>
-    <p>Si estás leyendo esto en tu propia liga, quiere decir que
-       <strong>tu repositorio, tu publicación y tu página ya funcionan</strong>.
-       Es todo lo que necesitabas antes de la sesión.</p>
-    <p class="chica">El martes le vas a pedir a Claude que reemplace esta página
-       por la tuya. Este archivo se llama <code>index.html</code> y es el único
-       que hay que cambiar.</p>
+  <div class="contenido">
+    <div class="caja">
+      <h1>Deja tu mensaje</h1>
+      <form id="form-registro">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="text" required maxlength="120">
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" required maxlength="2000"></textarea>
+        <button type="submit">Guardar</button>
+        <div id="estado" class="estado"></div>
+      </form>
+    </div>
+
+    <h2>Lo que se ha guardado</h2>
+    <div id="lista"></div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://huogusdflspataznoqgy.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_RxiwNKo1q76RHLrSeStE-w_DZfIIGc5";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const lista = document.getElementById("lista");
+    const form = document.getElementById("form-registro");
+    const estado = document.getElementById("estado");
+
+    function escapeHtml(texto) {
+      const div = document.createElement("div");
+      div.textContent = texto;
+      return div.innerHTML;
+    }
+
+    function pintarRegistros(registros) {
+      if (!registros || registros.length === 0) {
+        lista.innerHTML = '<p class="vacio">Todavía no hay nada aquí.</p>';
+        return;
+      }
+      lista.innerHTML = registros.map(r => `
+        <div class="registro">
+          <div class="nombre">${escapeHtml(r.nombre || "")}</div>
+          <div class="mensaje">${escapeHtml(r.mensaje || "")}</div>
+        </div>
+      `).join("");
+    }
+
+    async function cargarRegistros() {
+      const { data, error } = await supabase
+        .from("registros")
+        .select("nombre, mensaje")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        lista.innerHTML = '<p class="vacio">No se pudo cargar lo guardado todavía.</p>';
+        return;
+      }
+      pintarRegistros(data);
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const boton = form.querySelector("button");
+      const nombre = form.nombre.value.trim();
+      const mensaje = form.mensaje.value.trim();
+
+      boton.disabled = true;
+      estado.textContent = "Guardando...";
+      estado.className = "estado";
+
+      const { error } = await supabase.from("registros").insert({ nombre, mensaje });
+
+      boton.disabled = false;
+      if (error) {
+        estado.textContent = "No se pudo guardar. Intenta de nuevo.";
+        estado.className = "estado error";
+        return;
+      }
+
+      estado.textContent = "Guardado.";
+      estado.className = "estado ok";
+      form.reset();
+      cargarRegistros();
+    });
+
+    cargarRegistros();
+  </script>
 </body>
 </html>
