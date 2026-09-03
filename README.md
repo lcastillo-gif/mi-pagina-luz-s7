@@ -10,7 +10,7 @@ antes de construir la versión real.
 
 Todo lo que la página muestre sale de una tabla de Supabase llamada
 `registros`, nunca de texto escrito a mano en el HTML. Sus columnas se
-documentan en `CLAUDE.md`, sección 2, una vez que la tabla exista.
+documentan en `CLAUDE.md`, sección 2, una vez que el formulario esté conectado.
 
 ## Qué hay en `.claude`
 
